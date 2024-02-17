@@ -1,0 +1,16 @@
+{
+  "name": "nutalov",
+  "version": "1.0.0",
+  "description": "compliments to my love",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mtproto/core": "6.3.0",
+    "node-html-parser": "^6.1.12",
+    "readline-sync": "^1.4.10"
+  }
+}
