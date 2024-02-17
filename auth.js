@@ -37,7 +37,7 @@ module.exports = async function auth() {
     return;
   }
 
-  const phone = readlineSync.question('Enter code ', {
+  const phone = readlineSync.question('Enter phone number ', {
     hideEchoBack: true
   });
   

@@ -83,8 +83,11 @@ class API {
 }
 
 const keysPath = path.resolve(__dirname, './data/keys.json');
+const dataPath = path.resolve(__dirname, './data');
+
 let keys = {};
 
+fs.mkdirSync(dataPath, { recursive: true });
 if(!fs.existsSync(keysPath)) {
   keys.api_id = readlineSync.question('Enter api_id ', {
     hideEchoBack: true
