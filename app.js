@@ -3,7 +3,8 @@ const auth = require('./auth');
 const getCompliments = require('./parse');
 const readlineSync = require('readline-sync');
 
-const lover = keys.api_id = readlineSync.question('Enter your lover: ');
+const lover = readlineSync.question('Enter your lover: ');
+const delay = 7000;
 
 (async function() {
   await auth();
@@ -13,6 +14,6 @@ const lover = keys.api_id = readlineSync.question('Enter your lover: ');
   const interval = setInterval(() => {
     const number = Math.floor(Math.random() * compliments.length);
     api.sendMessageTo(lover, compliments[number]);
-  }, 7000);
+  }, delay);
 })();
 
