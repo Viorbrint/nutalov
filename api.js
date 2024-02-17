@@ -3,18 +3,28 @@ const MTProto = require('@mtproto/core');
 const { sleep } = require('@mtproto/core/src/utils/common');
 const readlineSync = require('readline-sync');
 const fs = require('fs');
-//const { API_ID, API_HASH } = require('./private-data/data');
+
+// todo CONNECTION_API_ID_INVALID handle
+// todo CONNECTION_API_HASH_INVALID handle
+
 
 class API {
-  constructor(api_id, api_hash) {
-    this.mtproto = new MTProto({
-      api_id,
-      api_hash,
-
-      storageOptions: {
-        path: path.resolve(__dirname, './data/1.json'),
-      },
-    });
+  constructor() {
+    const {api_id, api_hash} = this.askKey();
+    try {
+      this.mtproto = new MTProto({
+        api_id,
+        api_hash,
+  
+        storageOptions: {
+          path: path.resolve(__dirname, './data/1.json'),
+        },
+      });
+    } catch (error) {
+      console.log("asasfasf");
+      console.log(error);
+    }
+    
   }
 
   async call(method, params, options = {}) {
@@ -80,28 +90,30 @@ class API {
     console.log(message);
     console.log();
   }
+
+  askKey() {
+    const keysPath = path.resolve(__dirname, './data/keys.json');
+    const dataPath = path.resolve(__dirname, './data');
+
+    let keys = {};
+
+    fs.mkdirSync(dataPath, { recursive: true });
+    if (!fs.existsSync(keysPath)) {
+      keys.api_id = readlineSync.question('Enter api_id ', {
+        hideEchoBack: true
+      });
+
+      keys.api_hash = readlineSync.question('Enter api_hash ', {
+        hideEchoBack: true
+      });
+
+      fs.writeFileSync(keysPath, JSON.stringify(keys));
+    }
+
+    return JSON.parse(fs.readFileSync(keysPath).toString());
+  }
 }
 
-const keysPath = path.resolve(__dirname, './data/keys.json');
-const dataPath = path.resolve(__dirname, './data');
-
-let keys = {};
-
-fs.mkdirSync(dataPath, { recursive: true });
-if(!fs.existsSync(keysPath)) {
-  keys.api_id = readlineSync.question('Enter api_id ', {
-    hideEchoBack: true
-  });
-
-  keys.api_hash = readlineSync.question('Enter api_hash ', {
-    hideEchoBack: true
-  });
-
-  fs.writeFileSync(keysPath, JSON.stringify(keys));
-}
-
-keys = JSON.parse(fs.readFileSync(keysPath).toString());
-
-const api = new API(keys.api_id, keys.api_hash);
+const api = new API();
 
 module.exports = api;
