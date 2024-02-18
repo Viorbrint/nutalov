@@ -37,13 +37,11 @@ module.exports = async function auth() {
     return;
   }
 
-  const phone = readlineSync.question('Enter phone number ', {
-    hideEchoBack: true
-  });
+  const phone = readlineSync.question('Enter phone number: ');
   
   const { phone_code_hash } = await sendCode(phone);
 
-  const code = readlineSync.question('Enter code ', {
+  const code = readlineSync.question('Enter code: ', {
     hideEchoBack: true
   });
 
@@ -53,7 +51,7 @@ module.exports = async function auth() {
       phone,
       phone_code_hash,
     });
-    console.log(signInResult);
+    // console.log(signInResult);
   } catch (error) {
     if (error.error_message !== 'SESSION_PASSWORD_NEEDED') {
       console.log(`error:`, error);

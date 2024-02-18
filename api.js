@@ -10,21 +10,16 @@ const fs = require('fs');
 
 class API {
   constructor() {
-    const {api_id, api_hash} = this.askKey();
-    try {
-      this.mtproto = new MTProto({
-        api_id,
-        api_hash,
-  
-        storageOptions: {
-          path: path.resolve(__dirname, './data/1.json'),
-        },
-      });
-    } catch (error) {
-      console.log("asasfasf");
-      console.log(error);
-    }
-    
+    const { api_id, api_hash } = this.getKey();
+
+    this.mtproto = new MTProto({
+      api_id,
+      api_hash,
+
+      storageOptions: {
+        path: path.resolve(__dirname, './data/1.json'),
+      },
+    });
   }
 
   async call(method, params, options = {}) {
@@ -62,6 +57,14 @@ class API {
         return this.call(method, params, options);
       }
 
+      if (error_message === 'CONNECTION_API_ID_INVALID') {
+        console.log('invalid api_id or api_hash');
+
+        this.updateKey();
+
+        return this.call(method, params, options);
+      }
+
       return Promise.reject(error);
     }
   }
@@ -91,26 +94,40 @@ class API {
     console.log();
   }
 
-  askKey() {
+  getKey() {
     const keysPath = path.resolve(__dirname, './data/keys.json');
-    const dataPath = path.resolve(__dirname, './data');
-
-    let keys = {};
-
-    fs.mkdirSync(dataPath, { recursive: true });
+    
     if (!fs.existsSync(keysPath)) {
-      keys.api_id = readlineSync.question('Enter api_id ', {
-        hideEchoBack: true
-      });
-
-      keys.api_hash = readlineSync.question('Enter api_hash ', {
-        hideEchoBack: true
-      });
-
-      fs.writeFileSync(keysPath, JSON.stringify(keys));
+      this.updateKey();
     }
-
+    
     return JSON.parse(fs.readFileSync(keysPath).toString());
+  }
+  
+  updateKey() {
+    const dataPath = path.resolve(__dirname, './data');
+    const keysPath = path.resolve(__dirname, './data/keys.json');
+    fs.mkdirSync(dataPath, { recursive: true });
+
+    const api_id = readlineSync.question('Enter api_id ', {
+      hideEchoBack: true
+    });
+
+    const api_hash = readlineSync.question('Enter api_hash ', {
+      hideEchoBack: true
+    });
+
+    fs.writeFileSync(keysPath, JSON.stringify({ api_id, api_hash }));
+
+    this.mtproto = new MTProto({
+      api_id,
+      api_hash,
+
+      storageOptions: {
+        path: path.resolve(__dirname, './data/1.json'),
+      },
+    });
+
   }
 }
 
